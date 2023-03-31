@@ -22,16 +22,16 @@ public class UsersController {
     public RoleRepository roleRepository;
 
 
-
     @Autowired
     public UsersController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/")
-    public String welcomePage() {
-        return "start_page";
+    public String startPage() {
+        return "/start_page";
     }
+
 
     @GetMapping("/user")
     public String pageForAuthenticatedUser(Principal principal, Model model) {
@@ -45,13 +45,12 @@ public class UsersController {
         model.addAttribute("users", userService.getAllUsers());
         return "all_users";
     }
-    @DeleteMapping(value = "/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
-        userService.delete(id);
-        return "redirect:/admin";
+
+    @GetMapping("/admin/{id}")
+    public String show(@PathVariable("id") int id, Model model) {
+        model.addAttribute("user", userService.show(id));
+        return "show";
     }
-
-
 
     @GetMapping("/user/{id}")
     public String showForUser(@PathVariable("id") int id, Model model) {
@@ -62,7 +61,7 @@ public class UsersController {
     @GetMapping("/admin/new")
     public String newPerson(Model model) {
         model.addAttribute("user", new User());
-        Collection<Role> roles = roleRepository.findAll();
+        Collection<Role> roles = (Collection<Role>) roleRepository.findAll();
         model.addAttribute("allRoles", roles);
         return "new";
     }
@@ -73,21 +72,15 @@ public class UsersController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("admin/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
         model.addAttribute("user", userService.show(id));
-        Collection<Role> roles = roleRepository.findAll();
+        Collection<Role> roles = (Collection<Role>)roleRepository.findAll();
         model.addAttribute("allRoles", roles);
         return "edit";
-
-    }
-    @PatchMapping(value = "/edit")
-    public String editSubmit(@ModelAttribute User user) {
-        userService.update(user);
-        return "redirect:/admin";
     }
 
-    @PatchMapping("admin/edit/{id}")
+    @PatchMapping("admin/{id}")
     public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
         userService.update(id, user);
         return "redirect:/admin";

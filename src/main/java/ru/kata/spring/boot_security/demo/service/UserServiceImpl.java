@@ -24,17 +24,11 @@ public class UserServiceImpl implements UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
-    private UserRepository userRepository;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    @Autowired
-    public void setUserRepository(UserRepository userRepository){
-        this.userRepository=userRepository;
-    }
 
     @Override
     public List<User> getAllUsers() {
-        return entityManager.createQuery("from User user").getResultList();
+        return entityManager.createQuery("SELECT user from User user").getResultList();
     }
 
     @Override
@@ -49,16 +43,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(int id, User updated) {
-        User userUpdated = show(id);
-        entityManager.detach(userUpdated);
-        userUpdated.setUsername(updated.getUsername());
-        userUpdated.setPassword(updated.getPassword());
-        userUpdated.setName(updated.getName());
-        userUpdated.setLastName(updated.getLastName());
-        userUpdated.setAge(updated.getAge());
-        userUpdated.setRoles(userUpdated.getRoles());
-        entityManager.merge(userUpdated);
+    public void update(int id, User updatedUser) {
+        User userToBeUpdated = show(id);
+        entityManager.detach(userToBeUpdated);
+        userToBeUpdated.setUsername(updatedUser.getUsername());
+        if (!(updatedUser.getPassword().equals(userToBeUpdated.getPassword()))) {
+            userToBeUpdated.setPassword((new BCryptPasswordEncoder()).encode(updatedUser.getPassword()));
+        } else {
+            userToBeUpdated.setPassword(userToBeUpdated.getPassword());
+        }
+        userToBeUpdated.setName(updatedUser.getName());
+        userToBeUpdated.setLastName(updatedUser.getLastName());
+        userToBeUpdated.setAge(updatedUser.getAge());
+        userToBeUpdated.setRoles(updatedUser.getRoles());
+        entityManager.merge(userToBeUpdated);
     }
 
     @Override
@@ -67,23 +65,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    private UserRepository userRepository;
 
+    @Autowired
+    public void setUserRepository(UserRepository userRepository){
+        this.userRepository=userRepository;
+    }
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
     }
-
-    @Override
-    public User update(User user) {
-        entityManager.merge(user);
-
-        if(user.getPassword() == null || user.getPassword().equals("")) {
-            throw new RuntimeException();
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return user;
-    }
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -97,6 +87,5 @@ public class UserServiceImpl implements UserService {
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
     }
-
 
 }

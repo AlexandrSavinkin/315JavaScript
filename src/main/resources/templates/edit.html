@@ -1,29 +1,39 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <html lang="en">
 <head>
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
-    <title>Изменить</title>
+  <meta charset="UTF-8">
+  <title>Update user</title>
 </head>
 <body>
-<form action="#" th:action="@{/edit}" th:object="${user}" th:method="PATCH">
-    <input type="hidden" th:field="*{id}" th:value="*{id}"/>
-    <p>Имя: <input type="text" th:field="*{username}" th:value="*{username}" th:charset="utf-8"/></p>
-    <p>Пароль: <input type="text" th:field="*{password}" th:value="*{password}"/></p>
-    <p>Имя: <input type="text" th:field="*{name}" th:value="*{name}" th:charset="utf-8"/></p>
-    <p>Фамилия: <input type="text" th:field="*{lastName}" th:value="*{lastName}" th:charset="utf-8"/></p>
-    <p>Возраст: <input type="text" th:field="*{age}" th:value="*{age}" th:charset="utf-8"/></p>
-
-    <p><input type="submit" value="Изменить"/></p>
-    <p>
-        <label>Roles:
-            <input type="checkbox" name="roles"
-                   th:each="role : ${allRoles}"
-                   th:text="${role.name}"
-                   th:value="${role.id}"
-                   th:field="*{roles}"
-            />
-        </label>
-    </p>
+<form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
+  <label for="username">Enter username: </label>
+  <input type="text" th:field="*{username}" id="username"/>
+  <br/>
+  <label for="password">Enter password: </label>
+  <input type="text" th:field="*{password}" id="password"/>
+  <br/>
+  <label for="name">Enter name: </label>
+  <input type="text" th:field="*{name}" id="name"/>
+  <br/>
+  <label for="lastname">Enter lastname: </label>
+  <input type="text" th:field="*{lastName}" id="lastname"/>
+  <br/>
+  <label for="age">Enter age: </label>
+  <input type="text" th:field="*{age}" id="age"/>
+  <br/>
+  <p>
+    <label>Roles:
+      <input type="checkbox" name="roles"
+             th:each="role : ${allRoles}"
+             th:text="${role.name}"
+             th:value="${role.id}"
+             th:field="*{roles}"
+      />
+    </label>
+  </p>
+  <input type="submit" value="Update!"/>
 </form>
+
 </body>
 </html>
