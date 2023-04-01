@@ -26,7 +26,10 @@ public class UsersController {
     public UsersController(UserService userService) {
         this.userService = userService;
     }
-
+//    @GetMapping("/")
+//    public String startPage() {
+//        return "/registration";
+//    }
     @GetMapping("/")
     public String startPage() {
         return "/start_page";
