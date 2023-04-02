@@ -12,83 +12,76 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <a href="/admin">Admin</a>
-    <br>
-    <a href="/user">User</a>
+
 </head>
-<div class="container">
-    <div class="card">
-        <div class="card-block">
-            <table class="table table-hover">
-                <thead>
-                <h1>Admin panel</h1>
-                <hr/>
-                <a href="/user">Users table</a>
-                <a href="admin/new">New user</a>
-                <br>
-                <br>
+<body>
+<div class="table-responsive">
+    <div class="bg-dark text-white"> user.username</div>
+    <br>
+    <div class="col-lg-2">
+        <p class="bg-primary">Admin</p>
+    </div>
+
+    <div class="col-lg-2">
+        <p class="bg- success">User</p>
+    </div>
+    <div class="container">
+
+        <table class="table table-striped">
+            <thead>
+            <h1>Admin panel</h1>
+            <a href="/user">Users table</a>
+            &nbsp &nbsp &nbsp
+            <a href="admin/new">New user</a>
+            <br>
+            <tr class="active">
                 <h3>All users</h3>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="user : ${users}">
                 <tr>
-                    <th>ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Age</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.name}"></td>
+                    <td th:text="${user.lastName}"></td>
+                    <td th:text="${user.age}"></td>
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.getRoles()}"></td>
+                    <td>
+                        <a th:href="@{/updateStudentPage/{id}(id=${user.id})}" class="btn btn-info">Edit</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/deleteStudent/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>
+                    </td>
+                    <td>
+            </th:block>
+            <br/>
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                    crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                    crossorigin="anonymous"></script>
 
+            </tbody>
 
-                <th:block th:each="user : ${users}">
-                    <tr>
-                        <td th:text="${user.id}"></td>
-                        <td th:text="${user.name}"></td>
-                        <td th:text="${user.lastName}"></td>
-                        <td th:text="${user.age}"></td>
-                        <td>
-                            <a th:href="@{/updateStudentPage/{id}(id=${user.id})}" class="btn btn-primary">Update</a>
-                            <a th:href="@{/deleteStudent/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>
-                        </td>
+        </table>
 
-                        <td>
-                </th:block>
-                <br/>
-                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-                        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-                        crossorigin="anonymous"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-                        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-                        crossorigin="anonymous"></script>
-                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-                        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-                        crossorigin="anonymous"></script>
-
-                </tbody>
-
-            </table>
-        </div>
     </div>
 </div>
+</body>
 </html>
 
-<!--    <hr/>-->
-<!--    <a href="admin/new">Create new user</a>-->
-<!--    <br/>-->
-<!--    <a href="/logout">Logout</a>-->
-<!--<body>-->
-
-<!--<div th:each="user : ${users}">-->
-<!--    <a th:href="@{admin/{id}(id=${user.getId()})}">-->
-<!--        <tr th:text="${user.getName()}"></tr>-->
-<!--        <tr th:text="${user.getLastName()}"></tr>-->
-<!--        <tr th:text="${user.getAge()}"></tr>-->
-<!--    </a>-->
-<!--</div>-->
-<!--<br/>-->
-<!--<hr/>-->
-<!--<a href="admin/new">Create new user</a>-->
-<!--<br/>-->
-<!--<a href="/logout">Logout</a>-->
-
-<!--</body>-->

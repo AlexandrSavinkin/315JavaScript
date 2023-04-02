@@ -14,22 +14,22 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "id")
     private int id;
 
-    @Column
+    @Column(name = "email")
     private String username;
 
-    @Column
+    @Column(name = "password")
     private String password;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "lastname")
     private String lastname;
 
-    @Column
+    @Column(name = "age")
     private int age;
 
     public User() {

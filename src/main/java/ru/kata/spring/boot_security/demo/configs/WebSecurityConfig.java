@@ -46,14 +46,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().successHandler(successUserHandler)
-                //                .loginProcessingUrl("/")
+//                .loginProcessingUrl("/")
+//                .loginPage("/reg")
                 .and()
                 .logout()
                 .permitAll()
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
     }
-
+//.successHandler(successUserHandler)
 
     @Bean
     public PasswordEncoder passwordEncoder() {

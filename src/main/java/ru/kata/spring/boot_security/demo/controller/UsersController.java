@@ -28,7 +28,7 @@ public class UsersController {
     }
 //    @GetMapping("/")
 //    public String startPage() {
-//        return "/registration";
+//        return "/reg";
 //    }
     @GetMapping("/")
     public String startPage() {
@@ -64,7 +64,7 @@ public class UsersController {
     @GetMapping("/admin/new")
     public String newPerson(Model model) {
         model.addAttribute("user", new User());
-        Collection<Role> roles = (Collection<Role>) roleRepository.findAll();
+        Collection<Role> roles = roleRepository.findAll();
         model.addAttribute("allRoles", roles);
         return "new";
     }
@@ -78,7 +78,7 @@ public class UsersController {
     @GetMapping("admin/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
         model.addAttribute("user", userService.show(id));
-        Collection<Role> roles = (Collection<Role>)roleRepository.findAll();
+        Collection<Role> roles = roleRepository.findAll();
         model.addAttribute("allRoles", roles);
         return "edit";
     }
