@@ -86,7 +86,8 @@ public class User implements UserDetails {
         return username;
     }
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST},
+            fetch = FetchType.LAZY)
     @JoinTable(name="users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role>roles = new HashSet<>();
 
@@ -133,7 +134,7 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", email='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", lastname='" + lastname + '\'' +

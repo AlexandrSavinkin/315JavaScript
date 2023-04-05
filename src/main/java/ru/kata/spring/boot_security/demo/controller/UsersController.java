@@ -13,7 +13,6 @@ import java.security.Principal;
 import java.util.Collection;
 
 
-
 @Controller
 @RequestMapping("/")
 public class UsersController {
@@ -26,13 +25,14 @@ public class UsersController {
     public UsersController(UserService userService) {
         this.userService = userService;
     }
-//    @GetMapping("/")
+
+    //    @GetMapping("/")
 //    public String startPage() {
 //        return "/reg";
 //    }
     @GetMapping("/")
     public String startPage() {
-        return "/start_page";
+        return "redirect:/login";
     }
 
 
@@ -40,13 +40,18 @@ public class UsersController {
     public String pageForAuthenticatedUser(Principal principal, Model model) {
         User user = userService.findByUsername(principal.getName());
         model.addAttribute(user);
-        return "user";
+        if (user.getRoles().contains(roleRepository.getById(1))) {
+            return "all_users";
+        } else
+            return "user";
     }
 
     @GetMapping("/admin")
-    public String getAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "all_users";
+    public String getAllUsers(Model model,Principal principal,@ModelAttribute("updatedUser") User updatedUser) {
+        User user = userService.findByUsername(principal.getName());
+        model.addAttribute("principalUser",user);
+        model.addAttribute("")
+        return "usersInfo";
     }
 
     @GetMapping("/admin/{id}")

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.reposotiries.UserRepository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collection;
@@ -43,19 +44,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(int id, User updatedUser) {
+    public void update(int id, User user) {
+
         User userToBeUpdated = show(id);
         entityManager.detach(userToBeUpdated);
-        userToBeUpdated.setUsername(updatedUser.getUsername());
-        if (!(updatedUser.getPassword().equals(userToBeUpdated.getPassword()))) {
-            userToBeUpdated.setPassword((new BCryptPasswordEncoder()).encode(updatedUser.getPassword()));
+
+        if (user.getUsername().isEmpty()) {
+            userToBeUpdated.setUsername(userToBeUpdated.getUsername());
         } else {
-            userToBeUpdated.setPassword(userToBeUpdated.getPassword());
+            userToBeUpdated.setUsername(user.getUsername());
         }
-        userToBeUpdated.setName(updatedUser.getName());
-        userToBeUpdated.setLastName(updatedUser.getLastName());
-        userToBeUpdated.setAge(updatedUser.getAge());
-        userToBeUpdated.setRoles(updatedUser.getRoles());
+        if (user.getPassword().isEmpty()) {
+            userToBeUpdated.setPassword(userToBeUpdated.getPassword());
+        } else {
+            userToBeUpdated.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
+        }
+        if (user.getName().isEmpty()) {
+            userToBeUpdated.setName(userToBeUpdated.getName());
+        } else {
+            userToBeUpdated.setName(user.getName());
+        }
+        if (user.getLastName().isEmpty()) {
+            userToBeUpdated.setLastName(userToBeUpdated.getLastName());
+        } else {
+            userToBeUpdated.setLastName(user.getLastName());
+        }
+        if (user.getAge()==0) {
+            userToBeUpdated.setAge(userToBeUpdated.getAge());
+        } else {
+            userToBeUpdated.setAge(user.getAge());
+        }
+        if (user.getRoles().isEmpty()) {
+            userToBeUpdated.setRoles(userToBeUpdated.getRoles());
+        } else {
+            userToBeUpdated.setRoles(user.getRoles());
+        }
         entityManager.merge(userToBeUpdated);
     }
 
@@ -68,23 +91,25 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository){
-        this.userRepository=userRepository;
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-    public User findByUsername(String username){
+
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user=findByUsername(username);
-        if(user==null){
+        User user = findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
     }
 
