@@ -43,8 +43,8 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return name.replace("[", "")
-                   .replace("]", "");
+        return name.substring(5);
+
 
 
     }
