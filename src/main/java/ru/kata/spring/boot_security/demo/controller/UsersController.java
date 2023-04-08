@@ -43,7 +43,9 @@ public class UsersController {
     @GetMapping("/user")
     public String pageForAuthenticatedUser(Principal principal, Model model) {
         User user = userService.findByUsername(principal.getName());
-        model.addAttribute(user);
+        model.addAttribute("principalUser", user);
+        Collection<Role> roles = roleRepository.findAll();
+        model.addAttribute("allRoles", roles);
         if (user.getRoles().contains(roleRepository.getById(2))) {
             return "show";
         } else
@@ -88,12 +90,12 @@ public class UsersController {
         return "redirect:/admin";
     }
 
-    @GetMapping("admin/{id}/edit")
+    @GetMapping("admin/{id}/")
     public String edit(Model model, @PathVariable("id") int id) {
         model.addAttribute("user", userService.show(id));
         Collection<Role> roles = roleRepository.findAll();
         model.addAttribute("allRoles", roles);
-        return "edit";
+        return "redirect:/admin";
     }
 
     @PatchMapping("admin/{id}")
@@ -114,7 +116,7 @@ public class UsersController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
             return "/reg";
-        return "redirect:/start_page";
+        return "redirect:/";
     }
 
 
