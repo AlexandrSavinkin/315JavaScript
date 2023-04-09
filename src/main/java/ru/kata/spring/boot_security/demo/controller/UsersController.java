@@ -43,13 +43,12 @@ public class UsersController {
     @GetMapping("/user")
     public String pageForAuthenticatedUser(Principal principal, Model model) {
         User user = userService.findByUsername(principal.getName());
-        model.addAttribute("principalUser", user);
-        Collection<Role> roles = roleRepository.findAll();
-        model.addAttribute("allRoles", roles);
-        if (user.getRoles().contains(roleRepository.getById(2))) {
+        model.addAttribute(user);
+        if (user.getRoles().contains(roleRepository.getById(1))) {
             return "show";
-        } else
+        } else {
             return "user";
+        }
     }
 
     @GetMapping("/admin")
@@ -61,18 +60,6 @@ public class UsersController {
         model.addAttribute("allRoles", roles);
         return "all_users";
     }
-
-//    @GetMapping("/admin/{id}")
-//    public String show(@PathVariable("id") int id, Model model) {
-//        model.addAttribute("user", userService.show(id));
-//        return "show";
-//    }
-//
-//    @GetMapping("/user/{id}")
-//    public String showForUser(@PathVariable("id") int id, Model model) {
-//        model.addAttribute("user", userService.show(id));
-//        return "user";
-//    }
 
     @GetMapping("/admin/new")
     public String newPerson(Model model, Principal principal) {
