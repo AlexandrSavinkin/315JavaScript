@@ -4,20 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
-import javax.sql.DataSource;
+
 
 @Configuration
 @EnableWebSecurity
@@ -38,23 +32,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable().httpBasic().and()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
+                .antMatchers("/login").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
+                .antMatchers("/user/**").hasAnyRole("USER","ADMIN")
                 .and()
-                .formLogin().successHandler(successUserHandler)
-//                .usernameParameter("email")
-//                .loginPage("/reg")
-                .and()
-                .logout()
-                .permitAll()
-                .and()
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
+                .formLogin(form -> {
+                    try {
+                        form
+                                .loginPage("/login")
+                                .successHandler(successUserHandler)
+                                .and()
+                                .logout()
+                                .permitAll();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
     }
-//.successHandler(successUserHandler)
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
