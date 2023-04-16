@@ -6,25 +6,35 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Repository;
+
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.reposotiries.UserRepository;
+import ru.kata.spring.boot_security.demo.util.PersonNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-@Repository
+@Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    private UserRepository userRepository;
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
 
     @Override
@@ -34,13 +44,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User show(int id) {
-        return entityManager.find(User.class, id);
+        Optional<User> foundUser = userRepository.findById(id);
+        return foundUser.orElseThrow(PersonNotFoundException::new);
+//     return entityManager.find(User.class, id);
     }
 
+
     @Override
+    @Transactional
     public void save(User user) {
         user.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
-        entityManager.persist(user);
+        userRepository.save(user);
+//        entityManager.persist(user);
     }
 
     @Override
@@ -88,12 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private UserRepository userRepository;
 
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);

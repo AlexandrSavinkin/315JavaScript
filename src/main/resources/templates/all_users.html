@@ -137,7 +137,8 @@
                                                             <br>
                                                             <div class="position-relative">
                                                                 <div class="position-absolute top-0 start-50 translate-middle">
-                                                                    <input class="form-control bg-light" type="text" required
+                                                                    <input class="form-control bg-light" type="text"
+                                                                           required
                                                                            th:value="${user.getLastName()}"
                                                                            th:name="lastName" id="lastName">
                                                                 </div>
@@ -183,11 +184,13 @@
 
                                                             <strong>Roles</strong>
                                                             <select multiple class="form-control form-control-sm"
-                                                                    id="roles1" th:name="roles" size="3" required>
-                                                                <option th:each="role : ${allRoles}"
+                                                                    id="roles1" th:name="roles" size="3" readonly>
+                                                                <th:block class="bg-primary">
+                                                                    <option th:each="role : ${allRoles}"
 
-                                                                        th:text="${role.name.replaceFirst('ROLE_', '')}" th:value="${role.id}"
-                                                                        class="m-2"/>
+                                                                            th:text="${role.name.replaceFirst('ROLE_', '')}"
+                                                                            th:value="${role.id}"
+                                                                            class="m-2"/>
                                                                 </th:block>
                                                             </select>
                                                         </div>
@@ -321,7 +324,6 @@
         </div>
     </div>
 </div>
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"

@@ -5,6 +5,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,24 +21,35 @@ public class User implements UserDetails {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "email")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "name")
+    @NotEmpty(message = "Here should be the name!")
+    @Size(min = 2, max = 30, message = "Number of characters from 2 to 30")
     private String name;
 
     @Column(name = "lastname")
+    @NotEmpty(message = "Here should be the lastname!")
+    @Size(min = 2, max = 30, message = "Number of characters from 2 to 30")
     private String lastname;
 
     @Column(name = "age")
+    @Min(value = 0, message = "Age must be greater than 0")
     private int age;
+
+    @Column(name = "email")
+    @Email
+    @NotEmpty(message = "Here should be the email!")
+    @Size(min = 2, max = 30, message = "Number of characters from 2 to 30")
+    private String username;
+
+    @Column(name = "password")
+    @NotEmpty(message = "Here should be the password!")
+    private String password;
+
 
     public User() {
 
     }
+
     public int getId() {
         return id;
     }
@@ -55,9 +70,8 @@ public class User implements UserDetails {
         return lastname;
     }
 
-
-    public void setLastName(String lastName) {
-        this.lastname = lastName;
+    public void setLastName(String lastname) {
+        this.lastname = lastname;
     }
 
     public int getAge() {
@@ -88,9 +102,8 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = {CascadeType.PERSIST},
             fetch = FetchType.LAZY)
-    @JoinTable(name="users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role>roles = new HashSet<>();
-
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles = new HashSet<>();
 
 
     public Collection<Role> getRoles() {
@@ -107,7 +120,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
     }
-
 
 
     @Override

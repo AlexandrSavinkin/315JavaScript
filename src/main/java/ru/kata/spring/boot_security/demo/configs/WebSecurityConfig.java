@@ -42,8 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER","ADMIN")
-//                .anyRequest().hasAnyRole("USER", "ADMIN")
+                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin(form -> {
                     try {
@@ -57,19 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         throw new RuntimeException(e);
                     }
                 });
-//                .formLogin()
-//                .loginPage("/")
-//                .successHandler(successUserHandler)
-//                .and()
-//                .logout()
-//                .permitAll()
-//                .and()
-//                .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
-//
-//    }
-    }
-//.successHandler(successUserHandler)
 
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
