@@ -65,13 +65,14 @@ public class User implements UserDetails {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getLastName() {
-        return lastname;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
-    public void setLastName(String lastname) {
-        this.lastname = lastname;
+
+
+    public String getLastname() {
+        return lastname;
     }
 
     public int getAge() {
@@ -100,7 +101,7 @@ public class User implements UserDetails {
         return username;
     }
 
-    @ManyToMany(cascade = {CascadeType.PERSIST},
+    @ManyToMany(cascade = {CascadeType.MERGE},
             fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles = new HashSet<>();
@@ -154,4 +155,6 @@ public class User implements UserDetails {
                 ", roles=" + roles +
                 '}';
     }
+
+
 }

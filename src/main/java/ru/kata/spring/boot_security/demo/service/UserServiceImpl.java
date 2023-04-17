@@ -29,13 +29,6 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private UserRepository userRepository;
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
 
     @Override
     public List<User> getAllUsers() {
@@ -79,10 +72,10 @@ public class UserServiceImpl implements UserService {
         } else {
             userToBeUpdated.setName(user.getName());
         }
-        if (user.getLastName().isEmpty()) {
-            userToBeUpdated.setLastName(userToBeUpdated.getLastName());
+        if (user.getLastname().isEmpty()) {
+            userToBeUpdated.setLastname(userToBeUpdated.getLastname());
         } else {
-            userToBeUpdated.setLastName(user.getLastName());
+            userToBeUpdated.setLastname(user.getLastname());
         }
         if (user.getAge()==0) {
             userToBeUpdated.setAge(userToBeUpdated.getAge());
@@ -103,7 +96,12 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    private UserRepository userRepository;
 
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
