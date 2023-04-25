@@ -33,17 +33,17 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "name")
-    @NotEmpty(message = "Заполните поле")
-    @Size(min = 2, max = 20, message = "Введите имя от 2 до 20 символов")
+    @NotEmpty(message = "Fill in the field")
+    @Size(min = 2, max = 20, message = "Enter between 2 and 20 characters")
     private String firstName;
 
     @Column(name = "lastname")
-    @NotEmpty(message = "Фамилия пуста")
-    @Size(min = 2, max = 20, message = "Введите фамилию от 2 до 20 символов")
+    @NotEmpty(message = "Fill in the field")
+    @Size(min = 2, max = 20, message = "Enter between 2 and 20 characters")
     private String lastName;
 
     @Column(name = "age")
-    @Min(value = 0, message = "Возраст должен быть больше 0" )
+    @Min(value = 0, message = "Age must be greater than 0" )
     private int age;
 
     @ManyToMany(fetch = FetchType.LAZY)
