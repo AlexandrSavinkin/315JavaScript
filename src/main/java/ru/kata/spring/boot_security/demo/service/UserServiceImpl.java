@@ -1,10 +1,10 @@
 package ru.kata.spring.boot_security.demo.service;
 
 
-import  ru.kata.spring.boot_security.demo.model.Role;
-import  ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.model.Role;
+import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import  ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +57,8 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteById(id);
     }
     @Override
-
-    public void update(@NotNull User user, int id) {
+    @Transactional
+    public void update(User user, int id) {
         User oldUser = getById(user.getId());
         if (oldUser.getPassword().equals(user.getPassword()) || "".equals(user.getPassword())) {
             user.setPassword(oldUser.getPassword());
@@ -72,7 +70,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDetails loadUserByUsername(String firstName) throws UsernameNotFoundException {
         Optional<User> userPrimary = getByUsername(firstName);
-        if (userPrimary.isEmpty()) {
+        if (userPrimary == null) {
             throw new UsernameNotFoundException(firstName + " not found");
         }
         return userPrimary.get();
@@ -83,8 +81,3 @@ public class UserServiceImpl implements UserService{
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
-//if (user.getPassword().isEmpty()) {
-//        user.setPassword(user.getPassword());
-//        } else {
-//        user.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
-//        }

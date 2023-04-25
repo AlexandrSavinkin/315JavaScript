@@ -16,38 +16,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.successUserHandler = successUserHandler;
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().httpBasic().and()
+        http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().hasAnyRole("USER", "ADMIN")
-                .and()
-                .formLogin(form -> {
-                    try {
-                        form
-                                .loginPage("/login")
-                                .successHandler(successUserHandler)
-                                .and()
-                                .logout()
-                                .permitAll();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                .antMatchers("/admins/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("USER","ADMIN")
+                .antMatchers("/api**").hasAnyRole("USER","ADMIN")
+                .anyRequest().authenticated()
+                    .and()
+                .formLogin().successHandler(successUserHandler).permitAll()
+                    .and()
+                .logout().permitAll();
     }
-
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
-
-
 }

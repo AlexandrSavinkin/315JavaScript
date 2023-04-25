@@ -25,7 +25,6 @@ async function addNewUser(event) {
             password: form_new.password.value,
             roles: listOfRole
         })
-
     }
     await fetch(urlNew,method).then(() => {
         form_new.reset();
@@ -40,7 +39,7 @@ async function addNewUser(event) {
             })
         })
         var triggerEl = document.querySelector('#Admin_panel-tab a[href="#user_table"]')
-        bootstrap.Tab.getInstance(triggerEl).show()
+        bootstrap.Tab.getInstance(triggerEl).show() // Select tab by name
     });
 
 }

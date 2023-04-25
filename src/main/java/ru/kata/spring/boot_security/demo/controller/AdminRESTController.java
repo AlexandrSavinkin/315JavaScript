@@ -2,7 +2,7 @@ package ru.kata.spring.boot_security.demo.controller;
 
 
 import ru.kata.spring.boot_security.demo.model.User;
-import  ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,7 @@ public class AdminRESTController {
 
     @PostMapping("/newAddUser")
     public ResponseEntity<HttpStatus> saveNewUser(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.add(user);
         return new ResponseEntity<> (HttpStatus.OK);
     }
@@ -61,10 +61,9 @@ public class AdminRESTController {
     @PatchMapping("/users/{id}")
     public ResponseEntity<HttpStatus> userSaveEdit(@RequestBody @NotNull User user, @PathVariable Integer id) {
         user.setId(id);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.update(user, id);
 
         return new ResponseEntity<> (HttpStatus.OK);
     }
 }
-
