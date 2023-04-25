@@ -1,124 +1,90 @@
 package ru.kata.spring.boot_security.demo.service;
 
+
+import  ru.kata.spring.boot_security.demo.model.Role;
+import  ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import  ru.kata.spring.boot_security.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.reposotiries.UserRepository;
-import ru.kata.spring.boot_security.demo.util.PersonNotFoundException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Collection;
+
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 
 @Service
-@Transactional
-public class UserServiceImpl implements UserService {
+@Transactional(readOnly = true)
+public class UserServiceImpl implements UserService{
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    UserRepository userRepository;
+    RoleRepository roleRepository;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
 
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
+    @Override
+    public List<Role> getAllRoles() { return roleRepository.findAll(); }
+    @Override
+    @Transactional
+    public void add(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
     @Override
     public List<User> getAllUsers() {
-        return entityManager.createQuery("SELECT user from User user").getResultList();
+        return userRepository.findAll();
     }
-
     @Override
-    public User show(int id) {
-        Optional<User> foundUser = userRepository.findById(id);
-        return foundUser.orElseThrow(PersonNotFoundException::new);
-//     return entityManager.find(User.class, id);
+    public User getById(int id) {
+        return userRepository.findById(id).get();
     }
-
-
+    @Override
+    public Optional<User> getByUsername(String firstName) {
+        return userRepository.findByUsername(firstName);
+    }
     @Override
     @Transactional
-    public void save(User user) {
-        user.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
-        userRepository.save(user);
-//        entityManager.persist(user);
-    }
-
-    @Override
-    public void update(int id, User user) {
-
-        User userToBeUpdated = show(id);
-        entityManager.detach(userToBeUpdated);
-
-        if (user.getUsername().isEmpty()) {
-            userToBeUpdated.setUsername(userToBeUpdated.getUsername());
-        } else {
-            userToBeUpdated.setUsername(user.getUsername());
-        }
-        if (user.getPassword().isEmpty()) {
-            userToBeUpdated.setPassword(userToBeUpdated.getPassword());
-        } else {
-            userToBeUpdated.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
-        }
-        if (user.getName().isEmpty()) {
-            userToBeUpdated.setName(userToBeUpdated.getName());
-        } else {
-            userToBeUpdated.setName(user.getName());
-        }
-        if (user.getLastname().isEmpty()) {
-            userToBeUpdated.setLastname(userToBeUpdated.getLastname());
-        } else {
-            userToBeUpdated.setLastname(user.getLastname());
-        }
-        if (user.getAge()==0) {
-            userToBeUpdated.setAge(userToBeUpdated.getAge());
-        } else {
-            userToBeUpdated.setAge(user.getAge());
-        }
-        if (user.getRoles().isEmpty()) {
-            userToBeUpdated.setRoles(userToBeUpdated.getRoles());
-        } else {
-            userToBeUpdated.setRoles(user.getRoles());
-        }
-        entityManager.merge(userToBeUpdated);
-    }
-
-    @Override
     public void delete(int id) {
-        entityManager.remove(show(id));
+        userRepository.deleteById(id);
     }
+    @Override
 
-
-    private UserRepository userRepository;
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void update(@NotNull User user, int id) {
+        User oldUser = getById(user.getId());
+        if (oldUser.getPassword().equals(user.getPassword()) || "".equals(user.getPassword())) {
+            user.setPassword(oldUser.getPassword());
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
+        userRepository.save(user);
     }
-
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    @Override
+    public UserDetails loadUserByUsername(String firstName) throws UsernameNotFoundException {
+        Optional<User> userPrimary = getByUsername(firstName);
+        if (userPrimary.isEmpty()) {
+            throw new UsernameNotFoundException(firstName + " not found");
+        }
+        return userPrimary.get();
     }
 
     @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+    public User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
-
 }
+//if (user.getPassword().isEmpty()) {
+//        user.setPassword(user.getPassword());
+//        } else {
+//        user.setPassword((new BCryptPasswordEncoder()).encode(user.getPassword()));
+//        }
